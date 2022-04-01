@@ -73,11 +73,12 @@ public class TaskSchedulingService {
 		}
 		log.info("Excecuted task [{}] for [{}:{}] status [{}]",entity.getId(), entity.getActionType(),entity.getDestination(),entity.getStatus());
 	}
-
+	
 	private void registrarExcecution(TaskDefinitionEntity entity) {
 		entity.setExcecutions(entity.getExcecutions() + 1);
 		if(entity.isFinalized()) {
 			removeScheduledTask(entity.getId(), Status.FINALIZED);
+			entity.setStatus(Status.FINALIZED);
 		}
 		log.info("Register excecution task [{}] for [{}:{}] status [{}] excecutions [{}]",entity.getId(), entity.getActionType(),entity.getDestination(),entity.getStatus(), entity.getExcecutions());
 		
@@ -99,19 +100,21 @@ public class TaskSchedulingService {
     	
         if(!jobsMap.containsKey(jobId)) {
         	log.info("Task [{}] not found in job maps",jobId);
+        	//TODO: throw a no content exception
         	return;
         }
         
         ScheduledFuture<?> scheduledTask = jobsMap.get(jobId);
         if(Objects.isNull(scheduledTask)) {
         	log.info("Task [{}] not found in job maps",jobId);
+        	//TODO: throw a no content exception
         	return;
         }
         
         repository.updateStatus(status, jobId);
-        log.info("Task [{}] update to [{}]", jobId, status);
+    	log.info("Task [{}] updated to [{}]", jobId, status);
         scheduledTask.cancel(true);
-        jobsMap.put(jobId, null);
-        log.info("Task [{}] canceled", jobId);
+        jobsMap.remove(jobId);
+        log.info("Task [{}] removed from triggers", jobId);
     }
 }
