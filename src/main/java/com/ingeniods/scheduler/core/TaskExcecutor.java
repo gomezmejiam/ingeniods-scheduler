@@ -11,7 +11,7 @@ public abstract class TaskExcecutor {
 	@Getter
 	public final PortType portType;
 	
-	public TaskExcecutor(PortType portType) {
+	protected TaskExcecutor(PortType portType) {
 		this.portType = portType;
 	}
 	

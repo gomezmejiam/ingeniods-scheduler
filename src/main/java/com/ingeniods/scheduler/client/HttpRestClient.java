@@ -33,7 +33,7 @@ public class HttpRestClient extends TaskExcecutor {
 	@Override
 	public TaskExcecutionResult excecute(ExcecutionRequest excecutionRequest, Integer maxAttemps)
 			throws RuntimeException {
-		Function<ExcecutionRequest, String> excecution = (er) -> {
+		Function<ExcecutionRequest, String> excecution = er -> {
 			 log.info("Requesting task id [{}] for [{}]", er.getTaskId(),er.getDestination());
 			 return getRestTemplate().exchange(uri(er.getDestination()), httpMethod(er.getActionType()), request(er), String.class).getBody();
 		};
@@ -55,9 +55,7 @@ public class HttpRestClient extends TaskExcecutor {
 
 	private HttpHeaders headers(ExcecutionRequest excecutionRequest) {
 		HttpHeaders httpHeaders = new HttpHeaders();
-		excecutionRequest.getHeaders().entrySet().stream().forEach(e -> {
-			httpHeaders.add(e.getKey(), e.getValue());
-		});
+		excecutionRequest.getHeaders().entrySet().stream().forEach(e -> httpHeaders.add(e.getKey(), e.getValue()));
 		return httpHeaders;
 	}
 
